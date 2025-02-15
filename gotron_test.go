@@ -16,6 +16,7 @@ var ctx = context.Background()
 
 var testAddr1 = "41c6e9be0a5dee6b995d47c111c1f01f7d896d51eb"
 var testKey1 = "ac52aa609aa95b2c09094528a4981d2ac06c01b14a197240bf3167b20796fdf1"
+var testBase58CheckAddr1 = "TU6xok89KFMZs4GEHCbJGhcdHYmt694EF7"
 var testAddr2 = "41cbc56bee2abe672274e5f90db9aa91f7ceb94a6f"
 var testKey2 = "1a1dcf54e92ded1ce8ec65bf6f7d47ef8ff3287ffba750609bc0b328cb710b64"
 
@@ -137,4 +138,28 @@ func TestTriggerSmartContract(t *testing.T) {
 		return
 	}
 	assert.True(t, br.Result)
+}
+
+func TestBase58Check(t *testing.T) {
+	text := "hello world"
+	encoded := Base58CheckEncode([]byte(text))
+	assert.NotEqual(t, text, encoded)
+
+	decoded, err := Base58CheckDecode(encoded)
+	if assert.NoError(t, err) {
+		assert.Equal(t, text, string(decoded))
+	}
+}
+
+func TestPubkeyToAddress(t *testing.T) {
+	key, err := crypto.GenerateKey()
+	assert.NoError(t, err)
+	address := PubkeyToAddress(key.PublicKey)
+	assert.Equal(t, uint8(0x41), address[0])
+}
+
+func TestAddressBase58Check(t *testing.T) {
+	addr := HexToAddress(testAddr1)
+	base58Check := addr.Base58Check()
+	assert.Equal(t, testBase58CheckAddr1, base58Check)
 }

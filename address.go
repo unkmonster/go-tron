@@ -17,6 +17,14 @@ func (a *Address) Hex() string {
 	return hex.EncodeToString(a[:])
 }
 
+func (a *Address) Bytes() []byte {
+	return (*a)[:]
+}
+
+func (a *Address) Base58Check() string {
+	return Base58CheckEncode(a.Bytes())
+}
+
 func BytesToAddress(b []byte) Address {
 	var a Address
 	a.SetBytes(b)
