@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -36,8 +37,12 @@ func HexToAddress(h string) Address {
 	return BytesToAddress(b)
 }
 
-// 以太坊地址+0x41前缀
 func PubkeyToAddress(p ecdsa.PublicKey) Address {
 	ethAddr := crypto.PubkeyToAddress(p)
-	return BytesToAddress(append([]byte{0x41}, ethAddr.Bytes()...))
+	return EthAddressToAddress(ethAddr)
+}
+
+// 以太坊地址+0x41前缀
+func EthAddressToAddress(eth common.Address) Address {
+	return BytesToAddress(append([]byte{0x41}, eth.Bytes()...))
 }

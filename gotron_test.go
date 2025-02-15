@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/common"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
@@ -162,4 +163,25 @@ func TestAddressBase58Check(t *testing.T) {
 	addr := HexToAddress(testAddr1)
 	base58Check := addr.Base58Check()
 	assert.Equal(t, testBase58CheckAddr1, base58Check)
+}
+
+func TestDecodeABI(t *testing.T) {
+	data := "a9059cbb0000000000000000000000005328dbddfb7ebdb18da5b08dbf0baf3cac5d63b200000000000000000000000000000000000000000000000000000000000186a0"
+	dataBytes, err := hex.DecodeString(data)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	params, err := TRC20Abi.Methods["transfer"].Inputs.Unpack(dataBytes[4:])
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	recipient := params[0].(common.Address)
+	amount := params[1].(*big.Int)
+
+	tronAddr := EthAddressToAddress(recipient)
+
+	assert.Equal(t, "THYv2uPKhz6YwQTkXf9QsxB96UtoPEPQVj", tronAddr.Base58Check())
+	assert.Equal(t, int64(100000), amount.Int64())
 }
